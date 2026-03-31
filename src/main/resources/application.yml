@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: bing-ai-code-backend
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi
+springdoc:
+  group-configs:
+    group: 'default'
+    path-to-match: '/**'
+    packages-to-scan: com.example.bingaicode.controller
+
+knife4j:
+  enable:
+  controller:
+    language: zh_cn
