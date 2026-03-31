@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class HeatherController {
+public class HealthController {
 
     @GetMapping("/")
     public BaseResponse<String> heathCheck() {
