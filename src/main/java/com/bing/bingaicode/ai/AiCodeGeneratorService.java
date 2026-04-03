@@ -15,15 +15,15 @@ public interface AiCodeGeneratorService {
      */
     @SystemMessage(fromResource = "prompt/codegen-html-system-prompt.txt")
     HtmlCodeResult generateHtmlCode(String userMessage);
+
     /**
      * 生成多文件代码
      *
-     * @param userMessage
-     * @return
+     * @param userMessage 用户提示词
+     * @return AI 的输出结果
      */
     @SystemMessage(fromResource = "prompt/codegen-multi-file-system-prompt.txt")
-    MultiFileCodeResult generateMutiFileCode(String userMessage);
-
+    MultiFileCodeResult generateMultiFileCode(String userMessage);
     /**
      * 生成html代码
      *
@@ -32,12 +32,14 @@ public interface AiCodeGeneratorService {
      */
     @SystemMessage(fromResource = "prompt/codegen-html-system-prompt.txt")
     Flux<String> generateHtmlCodeStream(String userMessage);
+
     /**
      * 生成多文件代码
      *
-     * @param userMessage
-     * @return
+     * @param userMessage 用户提示词
+     * @return AI 的输出结果
      */
     @SystemMessage(fromResource = "prompt/codegen-multi-file-system-prompt.txt")
-    Flux<String> generateMutiFileCodeStream(String userMessage);
+    Flux<String> generateMultiFileCodeStream(String userMessage);
+
 }
