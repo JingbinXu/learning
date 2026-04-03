@@ -1,4 +1,4 @@
-package com.bing.bingaicode.model.app;
+package com.bing.bingaicode.model.dto.app;
 
 import lombok.Data;
 

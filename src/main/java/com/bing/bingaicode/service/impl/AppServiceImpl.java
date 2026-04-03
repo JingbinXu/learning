@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
-import com.bing.bingaicode.model.app.AppQueryRequest;
+import com.bing.bingaicode.model.dto.app.AppQueryRequest;
 import com.bing.bingaicode.model.entity.User;
 import com.bing.bingaicode.model.vo.AppVO;
 import com.bing.bingaicode.model.vo.UserVO;

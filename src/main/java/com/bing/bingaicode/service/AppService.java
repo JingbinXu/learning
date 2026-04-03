@@ -1,13 +1,10 @@
 package com.bing.bingaicode.service;
 
-import com.bing.bingaicode.model.app.AppAddRequest;
-import com.bing.bingaicode.model.app.AppQueryRequest;
+import com.bing.bingaicode.model.dto.app.AppQueryRequest;
 import com.bing.bingaicode.model.entity.App;
-import com.bing.bingaicode.model.entity.User;
 import com.bing.bingaicode.model.vo.AppVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 

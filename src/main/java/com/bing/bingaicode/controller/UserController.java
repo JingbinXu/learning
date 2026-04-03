@@ -9,25 +9,20 @@ import com.bing.bingaicode.constant.UserConstant;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.exception.ThrowUtils;
-import com.bing.bingaicode.model.dto.*;
+import com.bing.bingaicode.model.dto.user.*;
 import com.bing.bingaicode.model.vo.LoginUserVO;
 import com.bing.bingaicode.model.vo.UserVO;
 import com.mybatisflex.core.paginate.Page;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.bing.bingaicode.model.entity.User;
 import com.bing.bingaicode.service.UserService;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.http.HttpRequest;
 import java.util.List;
 
 /**

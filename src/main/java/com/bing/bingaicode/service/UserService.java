@@ -1,6 +1,6 @@
 package com.bing.bingaicode.service;
 
-import com.bing.bingaicode.model.dto.UserQueryRequest;
+import com.bing.bingaicode.model.dto.user.UserQueryRequest;
 import com.bing.bingaicode.model.vo.LoginUserVO;
 import com.bing.bingaicode.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;

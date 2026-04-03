@@ -2,11 +2,10 @@ package com.bing.bingaicode.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
-import com.bing.bingaicode.model.dto.UserQueryRequest;
+import com.bing.bingaicode.model.dto.user.UserQueryRequest;
 import com.bing.bingaicode.model.enums.UserRoleEnum;
 import com.bing.bingaicode.model.vo.LoginUserVO;
 import com.bing.bingaicode.model.vo.UserVO;
@@ -19,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
