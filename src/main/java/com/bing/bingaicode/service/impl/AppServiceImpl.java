@@ -2,10 +2,14 @@ package com.bing.bingaicode.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.bing.bingaicode.core.AiCodeGeneratorFacade;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
+import com.bing.bingaicode.exception.ThrowUtils;
 import com.bing.bingaicode.model.dto.app.AppQueryRequest;
 import com.bing.bingaicode.model.entity.User;
+import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
 import com.bing.bingaicode.model.vo.AppVO;
 import com.bing.bingaicode.model.vo.UserVO;
 import com.bing.bingaicode.service.UserService;
@@ -16,6 +20,7 @@ import com.bing.bingaicode.mapper.AppMapper;
 import com.bing.bingaicode.service.AppService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +34,15 @@ import java.util.stream.Collectors;
  * @author bing
  */
 @Service
-public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService{
-
+public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private AiCodeGeneratorFacade aiCodeGeneratorFacade;
+
     @Override
     public AppVO getAppVO(App app) {
         if (app == null) {
@@ -101,6 +109,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         return queryWrapper;
     }
 
+
     @Override
     public List<AppVO> getAppVOList(List<App> appList) {
         if (CollUtil.isEmpty(appList)) {
@@ -121,6 +130,31 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
             }
             return appVO;
         }).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Flux<String> chatToGenCode(Long appId, String message, User loginUser) {
+        //参数校验
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用id错误");
+        ThrowUtils.throwIf(StrUtil.isBlank(message), ErrorCode.PARAMS_ERROR, "提示词不能为空");
+        //查询应用信息
+        App app = this.getById(appId);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR, "应用不存在");
+        //校验信息，仅本人能和自己应用对话
+        if (!app.getUserId().equals(loginUser.getId())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限");
+        }
+
+        //获取应用生成类型
+        String codeGenType = app.getCodeGenType();
+        CodeGenTypeEnum codeGenTypeEnum = CodeGenTypeEnum.getEnumByValue(codeGenType);
+        if (codeGenTypeEnum == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型错误");
+        }
+//        调用AI生成代码
+        return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+
     }
 
 }
