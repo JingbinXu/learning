@@ -12,6 +12,7 @@ import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.exception.ThrowUtils;
 import com.bing.bingaicode.model.dto.app.AppQueryRequest;
 import com.bing.bingaicode.model.entity.User;
+import com.bing.bingaicode.model.enums.ChatHistoryMessageTypeEnum;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
 import com.bing.bingaicode.model.vo.AppVO;
 import com.bing.bingaicode.model.vo.UserVO;
@@ -22,10 +23,12 @@ import com.bing.bingaicode.model.entity.App;
 import com.bing.bingaicode.mapper.AppMapper;
 import com.bing.bingaicode.service.AppService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.io.File;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
  *
  * @author bing
  */
+
+@Slf4j
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
@@ -48,6 +53,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
     @Resource
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
 
+    @Resource
+    private ChatHistoryServiceImpl chatHistoryService;
     @Override
     public AppVO getAppVO(App app) {
         if (app == null) {
@@ -202,9 +209,46 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型错误");
         }
-//        调用AI生成代码
-        return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-
+        //在调用ai前，先保存用户消息到对话中
+        chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
+        //        调用AI生成代码
+        Flux<String> contentFlux = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        //收集ai响应的内容，并在完成后保存记录到对话历史
+        StringBuilder aiResponseBuilder = new StringBuilder();
+        return contentFlux.map(chunk -> {
+            aiResponseBuilder.append(chunk);
+            return chunk;
+        }).doOnComplete(() ->{
+            String aiResponseBuilderString = aiResponseBuilder.toString();
+            chatHistoryService.addChatMessage(appId, aiResponseBuilderString, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+        }).doOnEach(error ->{
+            String errorMessage = aiResponseBuilder.toString();
+            chatHistoryService.addChatMessage(appId, errorMessage , ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+        });
+    }
+    /**
+     * 删除应用时，关联删除对话历史
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean removeById(Serializable id) {
+        if (id == null) {
+            return false;
+        }
+        long appId = Long.parseLong(id.toString());
+        if (appId <= 0) {
+            return false;
+        }
+        // 先删除关联的对话历史
+        try {
+            chatHistoryService.deleteByAppId(appId);
+        } catch (Exception e) {
+            log.error("删除应用关联的对话历史失败：{}", e.getMessage());
+        }
+        // 删除应用
+        return super.removeById(id);
     }
 
 }
