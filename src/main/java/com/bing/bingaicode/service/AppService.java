@@ -16,7 +16,23 @@ import java.util.List;
  *
  */
 public interface AppService extends IService<App> {
+    /**
+     * 通过对话生成应用代码
+     *
+     * @param appId     应用 ID
+     * @param message   提示词
+     * @param loginUser 登录用户
+     * @return
+     */
 
+    /**
+     * 应用部署
+     *
+     * @param appId     应用 ID
+     * @param loginUser 登录用户
+     * @return 可访问的部署地址
+     */
+    String deployApp(Long appId, User loginUser);
 
     /**
      * 获取应用封装类

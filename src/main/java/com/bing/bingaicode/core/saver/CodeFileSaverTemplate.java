@@ -3,6 +3,7 @@ package com.bing.bingaicode.core.saver;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.bing.bingaicode.constant.AppConstant;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
@@ -11,7 +12,7 @@ import java.io.File;
 
 public abstract class CodeFileSaverTemplate<T> {
 
-    private static final String FILE_SAVE_ROOT_DIR = System.getProperty("user.dir") + "/tmp/code_output";
+    private static final String FILE_SAVE_ROOT_DIR = AppConstant.CODE_OUTPUT_ROOT_DIR;
     public final File saveCode (T result,Long  appId){
         //验证输入
         validateInput(result);
