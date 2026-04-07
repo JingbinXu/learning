@@ -147,11 +147,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean userLogout(HttpServletRequest request) {
-        // 先判断用户是否登录
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        if (userObj == null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户未登录");
-        }
+//        // 先判断用户是否登录
+//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+//        if (userObj == null) {
+//            throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户未登录");
+//        }
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;

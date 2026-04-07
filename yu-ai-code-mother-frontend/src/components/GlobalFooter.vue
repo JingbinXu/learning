@@ -8,7 +8,7 @@
           rel="noopener noreferrer"
           class="author-link"
         >
-          编程导航原创项目 by 程序员鱼皮
+          编程导航原创项目 by bingbing程序员
         </a>
       </p>
     </div>
