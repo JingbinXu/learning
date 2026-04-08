@@ -209,21 +209,24 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型错误");
         }
-        //在调用ai前，先保存用户消息到对话中
+        // 5. 在调用 AI 前，先保存用户消息到数据库中
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
-        //        调用AI生成代码
+        // 6. 调用 AI 生成代码（流式）
         Flux<String> contentFlux = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        //收集ai响应的内容，并在完成后保存记录到对话历史
+        // 7. 收集 AI 响应的内容，并且在完成后保存记录到对话历史
         StringBuilder aiResponseBuilder = new StringBuilder();
         return contentFlux.map(chunk -> {
+            // 实时收集 AI 响应的内容
             aiResponseBuilder.append(chunk);
             return chunk;
-        }).doOnComplete(() ->{
-            String aiResponseBuilderString = aiResponseBuilder.toString();
-            chatHistoryService.addChatMessage(appId, aiResponseBuilderString, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-        }).doOnEach(error ->{
-            String errorMessage = aiResponseBuilder.toString();
-            chatHistoryService.addChatMessage(appId, errorMessage , ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+        }).doOnComplete(() -> {
+            // 流式返回完成后，保存 AI 消息到对话历史中
+            String aiResponse = aiResponseBuilder.toString();
+            chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+        }).doOnError(error -> {
+            // 如果 AI 回复失败，也需要保存记录到数据库中
+            String errorMessage = "AI 回复失败：" + error.getMessage();
+            chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
         });
     }
     /**
