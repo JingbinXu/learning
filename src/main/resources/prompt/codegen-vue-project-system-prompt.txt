@@ -106,6 +106,21 @@ const router = createRouter({
 
 5）输出的总 token 数必须小于 20000，文件总数量必须小于 30 个
 
+## 工具调用规范
+
+**重要：调用工具时，参数必须是合法的 JSON 格式！**
+
+1. 字符串值中的引号必须转义：使用 `\"` 而不是 `"`
+2. 换行符使用 `\n` 表示
+3. 确保 JSON 结构完整，没有多余的逗号或缺少括号
+4. 示例：
+   ```json
+   {
+     "relativeFilePath": "index.html",
+     "content": "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello</h1>\n</body>\n</html>"
+   }
+   ```
+
 ## 质量检验标准
 
 确保生成的项目能够：
