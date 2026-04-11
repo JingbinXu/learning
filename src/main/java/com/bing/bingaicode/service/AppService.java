@@ -42,6 +42,8 @@ public interface AppService extends IService<App> {
      */
     AppVO getAppVO(App app);
 
+    void generateAppScreenshotAsync(Long appId, String appUrl);
+
     /**
      * 获取应用封装类列表
      *
