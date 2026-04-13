@@ -18,18 +18,21 @@ import com.bing.bingaicode.model.entity.User;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
 import com.bing.bingaicode.model.vo.AppVO;
 import com.bing.bingaicode.service.AppService;
+import com.bing.bingaicode.service.ProjectDownloadService;
 import com.bing.bingaicode.service.UserService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,8 @@ public class AppController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private ProjectDownloadService projectDownloadService;
 
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
@@ -76,6 +81,25 @@ public class AppController {
                         .build()
         ));
     }
+    @GetMapping({"/download/{appId}"})
+    public void downloadAppCode(@PathVariable Long appId, HttpServletRequest request, HttpServletResponse response) {
+        ThrowUtils.throwIf(appId == null || appId <= 0L, ErrorCode.PARAMS_ERROR, "应用ID无效");
+        App app = (App)this.appService.getById(appId);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR, "应用不存在");
+        User loginUser = this.userService.getLoginUser(request);
+        if (!app.getUserId().equals(loginUser.getId())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限下载该应用代码");
+        } else {
+            String codeGenType = app.getCodeGenType();
+            String sourceDirName = codeGenType + "_" + appId;
+            String sourceDirPath = AppConstant.CODE_OUTPUT_ROOT_DIR + File.separator + sourceDirName;
+            File sourceDir = new File(sourceDirPath);
+            ThrowUtils.throwIf(!sourceDir.exists() || !sourceDir.isDirectory(), ErrorCode.NOT_FOUND_ERROR, "应用代码不存在，请先生成代码");
+            String downloadFileName = String.valueOf(appId);
+            this.projectDownloadService.downloadProjectAsZip(sourceDirPath, downloadFileName, response);
+        }
+    }
+
 
     /**
      * 创建应用

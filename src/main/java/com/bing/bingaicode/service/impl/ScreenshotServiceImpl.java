@@ -1,4 +1,4 @@
-package com.bing.bingaicode.service;
+package com.bing.bingaicode.service.impl;
 
 
 import cn.hutool.core.io.FileUtil;
@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.exception.ThrowUtils;
 import com.bing.bingaicode.manger.CosManager;
+import com.bing.bingaicode.service.ScreenshotService;
 import com.bing.bingaicode.utils.WebScreenshotUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
