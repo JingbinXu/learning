@@ -1,6 +1,6 @@
 package com.bing.bingaicode.ai;
 
-import com.bing.bingaicode.ai.tools.FileWriteTool;
+import com.bing.bingaicode.ai.tools.*;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
@@ -44,6 +44,9 @@ public class AiCodeGeneratorServiceFactory {
 
     @Resource
     private ChatHistoryService chatHistoryService;
+
+    @Resource
+    private ToolManager toolManager;
 
     /**
      * AI 服务实例缓存
@@ -107,7 +110,13 @@ public class AiCodeGeneratorServiceFactory {
                     .chatModel(chatModel)
                     .streamingChatModel(reasoningStreamingChatModel)
                     .chatMemoryProvider(memoryId -> chatMemory)
-                    .tools(new FileWriteTool())
+                    .tools(toolManager.getAllTools())
+                    .tools(new FileWriteTool(),
+                            new FileDirReadTool(),
+                            new FileModifyTool(),
+                            new FileDirReadTool(),
+                            new FileDeleteTool()
+                    )
                     // 处理工具调用幻觉问题
                     .hallucinatedToolNameStrategy(toolExecutionRequest ->
                             ToolExecutionResultMessage.from(toolExecutionRequest,
