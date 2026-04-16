@@ -1,6 +1,7 @@
 package com.bing.bingaicode.langgraph4j.state;
 
 import com.bing.bingaicode.langgraph4j.model.ImageResource;
+import com.bing.bingaicode.langgraph4j.model.QualityResult;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -90,4 +91,8 @@ public class WorkflowContext implements Serializable {
     public static Map<String, Object> saveContext(WorkflowContext context) {
         return Map.of(WORKFLOW_CONTEXT_KEY, context);
     }
+    /**
+     * 质量检查结果
+     */
+    private QualityResult qualityResult;
 }
