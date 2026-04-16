@@ -1,5 +1,6 @@
 package com.bing.bingaicode.langgraph4j.state;
 
+import com.bing.bingaicode.langgraph4j.model.ImageCollectionPlan;
 import com.bing.bingaicode.langgraph4j.model.ImageResource;
 import com.bing.bingaicode.langgraph4j.model.QualityResult;
 import com.bing.bingaicode.model.enums.CodeGenTypeEnum;
@@ -69,9 +70,27 @@ public class WorkflowContext implements Serializable {
     private String buildResultDir;
 
     /**
+     * 质量检查结果
+     */
+    private QualityResult qualityResult;
+
+    /**
      * 错误信息
      */
     private String errorMessage;
+
+    /**
+     * 图片收集计划
+     */
+    private ImageCollectionPlan imageCollectionPlan;
+
+    /**
+     * 并发图片收集的中间结果字段
+     */
+    private List<ImageResource> contentImages;
+    private List<ImageResource> illustrations;
+    private List<ImageResource> diagrams;
+    private List<ImageResource> logos;
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -91,8 +110,4 @@ public class WorkflowContext implements Serializable {
     public static Map<String, Object> saveContext(WorkflowContext context) {
         return Map.of(WORKFLOW_CONTEXT_KEY, context);
     }
-    /**
-     * 质量检查结果
-     */
-    private QualityResult qualityResult;
 }
