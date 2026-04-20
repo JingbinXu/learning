@@ -1,5 +1,7 @@
 package com.bing.bingaicode.ai;
 
+import com.bing.bingaicode.ai.guardrail.PromptSafetyInputGuardrail;
+import com.bing.bingaicode.ai.guardrail.RetryOutputGuardrail;
 import com.bing.bingaicode.ai.tools.*;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
@@ -126,6 +128,9 @@ public class AiCodeGeneratorServiceFactory {
                                 ToolExecutionResultMessage.from(toolExecutionRequest,
                                         "Error: there is no tool called " + toolExecutionRequest.name())
                         )
+                        .maxSequentialToolsInvocations(20)  //最多连续调用20次工具
+                        .inputGuardrails(new PromptSafetyInputGuardrail())  //添加护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())    //添加输出护轨
                         .build();
             }
             // HTML 和 多文件生成，使用流式对话模型
@@ -136,6 +141,8 @@ public class AiCodeGeneratorServiceFactory {
                         .chatModel(chatModel)
                         .streamingChatModel(openAiStreamingChatModel)
                         .chatMemory(chatMemory)
+                        .inputGuardrails(new PromptSafetyInputGuardrail())  //添加输入护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())    //添加输出护轨
                         .build();
             }
 
