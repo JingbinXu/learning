@@ -117,12 +117,6 @@ public class AiCodeGeneratorServiceFactory {
                         .streamingChatModel(reasoningStreamingChatModel)
                         .chatMemoryProvider(memoryId -> chatMemory)
                         .tools(toolManager.getAllTools())
-                        .tools(new FileWriteTool(),
-                                new FileDirReadTool(),
-                                new FileModifyTool(),
-                                new FileDirReadTool(),
-                                new FileDeleteTool()
-                        )
                         // 处理工具调用幻觉问题
                         .hallucinatedToolNameStrategy(toolExecutionRequest ->
                                 ToolExecutionResultMessage.from(toolExecutionRequest,

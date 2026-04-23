@@ -132,9 +132,19 @@
             />
             <div class="input-actions">
               <a-button
+                  v-if="isGenerating"
+                  type="primary"
+                  danger
+                  @click="stopGeneration"
+              >
+                <template #icon>
+                  <StopOutlined />
+                </template>
+              </a-button>
+              <a-button
+                  v-else
                   type="primary"
                   @click="sendMessage"
-                  :loading="isGenerating"
                   :disabled="!isOwner"
               >
                 <template #icon>
@@ -237,6 +247,7 @@ import {
   InfoCircleOutlined,
   DownloadOutlined,
   EditOutlined,
+  StopOutlined,
 } from '@ant-design/icons-vue'
 
 const route = useRoute()
@@ -259,6 +270,9 @@ const messages = ref<Message[]>([])
 const userInput = ref('')
 const isGenerating = ref(false)
 const messagesContainer = ref<HTMLElement>()
+
+// 用于终止流式请求
+let abortController: AbortController | null = null
 
 // 对话历史相关
 const loadingHistory = ref(false)
@@ -475,12 +489,23 @@ const sendMessage = async () => {
   await generateCode(message, aiMessageIndex)
 }
 
-// 生成代码 - 使用 EventSource 处理流式响应
-const generateCode = async (userMessage: string, aiMessageIndex: number) => {
-  let eventSource: EventSource | null = null
-  let streamCompleted = false
+// 终止生成
+const stopGeneration = () => {
+  if (abortController) {
+    abortController.abort()
+    abortController = null
+  }
+  isGenerating.value = false
+  message.info('已终止AI输出')
+}
 
+// 生成代码 - 使用 fetch + ReadableStream 处理流式响应（支持终止）
+const generateCode = async (userMessage: string, aiMessageIndex: number) => {
   try {
+    // 创建 AbortController 用于终止请求
+    abortController = new AbortController()
+    const { signal } = abortController
+
     // 获取 axios 配置的 baseURL
     const baseURL = request.defaults.baseURL || API_BASE_URL
 
@@ -492,93 +517,98 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
 
     const url = `${baseURL}/app/chat/gen/code?${params}`
 
-    // 创建 EventSource 连接
-    eventSource = new EventSource(url, {
-      withCredentials: true,
-    })
-
     let fullContent = ''
 
-    // 处理接收到的消息
-    eventSource.onmessage = function (event) {
-      if (streamCompleted) return
+    // 使用 fetch 进行流式请求
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      signal,
+    })
 
-      try {
-        // 解析JSON包装的数据
-        const parsed = JSON.parse(event.data)
-        const content = parsed.d
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
 
-        // 拼接内容
-        if (content !== undefined && content !== null) {
-          fullContent += content
-          messages.value[aiMessageIndex].content = fullContent
-          messages.value[aiMessageIndex].loading = false
-          scrollToBottom()
+    const reader = response.body?.getReader()
+    if (!reader) {
+      throw new Error('无法读取响应流')
+    }
+
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      
+      if (done) {
+        // 流式传输完成
+        break
+      }
+
+      // 解码数据
+      buffer += decoder.decode(value, { stream: true })
+      
+      // 按行处理
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || '' // 保留不完整的行
+
+      for (const line of lines) {
+        if (!line.trim()) continue
+        
+        // 处理 SSE 格式数据
+        if (line.startsWith('data:')) {
+          const data = line.slice(5).trim()
+          
+          // 检查是否是 done 事件
+          if (data === '[DONE]') {
+            isGenerating.value = false
+            abortController = null
+            
+            // 延迟更新预览
+            setTimeout(async () => {
+              await fetchAppInfo()
+              updatePreview()
+            }, 1000)
+            return
+          }
+          
+          try {
+            const parsed = JSON.parse(data)
+            const content = parsed.d
+            
+            if (content !== undefined && content !== null) {
+              fullContent += content
+              messages.value[aiMessageIndex].content = fullContent
+              messages.value[aiMessageIndex].loading = false
+              scrollToBottom()
+            }
+          } catch (error) {
+            console.error('解析消息失败:', error, '原始数据:', data)
+          }
         }
-      } catch (error) {
-        console.error('解析消息失败:', error)
-        handleError(error, aiMessageIndex)
       }
     }
 
-    // 处理done事件
-    eventSource.addEventListener('done', function () {
-      if (streamCompleted) return
-
-      streamCompleted = true
-      isGenerating.value = false
-      eventSource?.close()
-
-      // 延迟更新预览，确保后端已完成处理
-      setTimeout(async () => {
-        await fetchAppInfo()
-        updatePreview()
-      }, 1000)
-    })
-
-    // 处理business-error事件（后端限流等错误）
-    eventSource.addEventListener('business-error', function (event: MessageEvent) {
-      if (streamCompleted) return
-
-      try {
-        const errorData = JSON.parse(event.data)
-        console.error('SSE业务错误事件:', errorData)
-
-        // 显示具体的错误信息
-        const errorMessage = errorData.message || '生成过程中出现错误'
-        messages.value[aiMessageIndex].content = `❌ ${errorMessage}`
-        messages.value[aiMessageIndex].loading = false
-        message.error(errorMessage)
-
-        streamCompleted = true
-        isGenerating.value = false
-        eventSource?.close()
-      } catch (parseError) {
-        console.error('解析错误事件失败:', parseError, '原始数据:', event.data)
-        handleError(new Error('服务器返回错误'), aiMessageIndex)
-      }
-    })
-
-    // 处理错误
-    eventSource.onerror = function () {
-      if (streamCompleted || !isGenerating.value) return
-      // 检查是否是正常的连接关闭
-      if (eventSource?.readyState === EventSource.CONNECTING) {
-        streamCompleted = true
-        isGenerating.value = false
-        eventSource?.close()
-
-        setTimeout(async () => {
-          await fetchAppInfo()
-          updatePreview()
-        }, 1000)
-      } else {
-        handleError(new Error('SSE连接错误'), aiMessageIndex)
-      }
+    // 正常完成
+    isGenerating.value = false
+    abortController = null
+    
+    setTimeout(async () => {
+      await fetchAppInfo()
+      updatePreview()
+    }, 1000)
+  } catch (error: any) {
+    // 如果是用户主动终止，不显示错误
+    if (error.name === 'AbortError') {
+      console.log('用户终止了AI输出')
+      return
     }
-  } catch (error) {
-    console.error('创建 EventSource 失败：', error)
+    
+    console.error('生成代码失败：', error)
     handleError(error, aiMessageIndex)
+  } finally {
+    abortController = null
   }
 }
 
@@ -765,7 +795,11 @@ onMounted(() => {
 
 // 清理资源
 onUnmounted(() => {
-  // EventSource 会在组件卸载时自动清理
+  // 终止正在进行的请求
+  if (abortController) {
+    abortController.abort()
+    abortController = null
+  }
 })
 </script>
 
