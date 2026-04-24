@@ -25,9 +25,11 @@
 
 4）企业级管理：提供用户管理、应用管理、系统监控、业务指标监控等后台功能，管理员可以设置精选应用、监控 AI 调用情况和系统性能。
 
-![](https://pic.yupi.icu/1/1753281175326-d7ecfcb9-f034-4893-8e13-be0c5dcdacf6.png)
+<img width="1920" height="887" alt="89ff5e11-1e64-4e49-a82f-69487a7377e0" src="https://github.com/user-attachments/assets/ef4769ad-abed-495e-9506-98256ceecf7d" />
 
-![](https://pic.yupi.icu/1/1753333524767-c89b8d1b-bc57-4094-ace7-1b37876f3f0b.png)
+
+<img width="1908" height="915" alt="50b265c0-06bc-44de-9a78-61f5eca625c7" src="https://github.com/user-attachments/assets/98a89b81-6edc-47ed-a4f5-971845cf5ca8" />
+
 
 <img width="1908" height="915" alt="img_2" src="https://github.com/user-attachments/assets/6f1842af-f328-4eb1-bbc3-744d5601c828" />
 
