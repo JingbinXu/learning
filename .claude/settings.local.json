@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip show *)",
+      "Bash(pip install *)",
+      "Bash(python generate_ppt.py)",
+      "Bash(python generate_report.py)",
+      "Read(//c/Users/许敬彬/Desktop/**)",
+      "Bash(claude plugin *)",
+      "Bash(npx @anthropic-ai/claude-code plugin install yupiicoder/magic-ai)",
+      "Bash(gh api *)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "Bash(git clone *)",
+      "Bash(git *)",
+      "Read(//c/Users/许敬彬/.claude/plugins/**)",
+      "Read(//c/Users/许敬彬/.claude/**)",
+      "Bash(mkdir -p D:/myaiproject/bing-ai-code/.claude/skills/pptx)",
+      "Bash(cp -r ~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/pptx/* D:/myaiproject/bing-ai-code/.claude/skills/pptx/)",
+      "Bash(npm install *)",
+      "Bash(pip config *)",
+      "Bash(env)",
+      "Bash(pip search *)",
+      "Bash(powershell *)",
+      "Bash(C:\\\\Users\\\\许敬彬\\\\.local\\\\uv.exe sync *)",
+      "Bash(/c/Users/许敬彬/.local/bin/uv.exe sync *)",
+      "Bash(export PATH=\"$HOME/.local/bin:$PATH\")",
+      "Bash(which uv *)",
+      "Bash(uv run *)",
+      "Bash(npm run *)",
+      "Bash(mkdir -p \"D:/myaiproject/ai-PRD\")",
+      "Bash(cp -r \"D:/myaiproject/bing-ai-code/bing-ai-code-frontend\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp -r \"D:/myaiproject/bing-ai-code/src\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp -r \"D:/myaiproject/bing-ai-code/sql\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp -r \"D:/myaiproject/bing-ai-code/docs\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp \"D:/myaiproject/bing-ai-code/README.md\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp \"D:/myaiproject/bing-ai-code/.gitignore\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp \"D:/myaiproject/bing-ai-code/generate_report.py\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp \"D:/myaiproject/bing-ai-code/generate_ppt.py\" \"D:/myaiproject/ai-PRD/\")",
+      "Bash(cp \"D:/myaiproject/bing-ai-code/pom.xml\" \"D:/myaiproject/ai-PRD/\")"
+    ]
+  }
+}
