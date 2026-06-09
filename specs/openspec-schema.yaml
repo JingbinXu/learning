@@ -1,0 +1,88 @@
+# ============================================================
+# OpenSpec Enterprise Frontend Specification Schema v1.0
+# ============================================================
+# 这是 OpenSpec 企业前端规范的 YAML Schema 定义。
+# 企业可通过此模板定义自己的设计系统、组件库、编码规范等，
+# 系统会在代码生成时通过 RAG 检索并注入到 AI 提示词中。
+# ============================================================
+
+# === 必填字段 ===
+meta:
+  schemaVersion: "1.0.0"      # 规范 Schema 版本
+  specName: ""                 # 规范名称，如 "我的企业前端规范"
+  specId: ""                   # 唯一标识，如 "my-company-frontend-spec"
+  description: ""              # 规范简介
+  author: ""                   # 作者
+  version: "1.0.0"             # 规范版本
+  tags: []                     # 标签列表，用于检索
+  applicableFrameworks: []     # 适用框架，如 ["vue3", "react", "html"]
+
+# === 分类（用于 RAG 检索时匹配） ===
+category: ""             # 可选值:
+                         #   design_system    - 设计系统（颜色/字体/间距/圆角等）
+                         #   component_library - 组件库规范
+                         #   coding_standard   - 编码规范（命名/目录/文件结构等）
+                         #   layout_template   - 页面布局模板
+                         #   interaction_pattern - 交互模式
+                         #   api_convention    - API 对接规范
+                         #   project_template  - 项目脚手架模板
+                         #   security_rule     - 安全规范
+                         #   custom            - 自定义规范
+
+# === 内容部分（一个规范文档可包含多个 section） ===
+sections:
+  # --- 示例 section ---
+  - section_id: ""       # 章节唯一 ID
+    title: ""            # 章节标题
+    description: ""      # 章节描述
+    content: ""          # 正文内容（Markdown 格式）
+    code_examples:       # 代码示例列表
+      - language: ""     # 代码语言，如 html, css, js, vue, tsx
+        filename: ""     # 文件名（可选）
+        description: ""  # 示例说明
+        code: ""         # 代码内容
+    rules: []            # 本章节的规则列表（字符串数组）
+
+# === 组件定义（component_library 类型规范的核心） ===
+components:
+  # --- 示例组件 ---
+  - component_name: ""   # 组件名称，如 "BizInput"
+    component_alias: []  # 组件别名，如 ["业务输入框", "企业输入"]
+    description: ""      # 组件描述
+    usage: ""            # 使用场景说明
+    props:               # 组件属性列表
+      - name: ""         # 属性名
+        type: ""         # 类型，如 String, Number, Boolean, Array, Object
+        required: false  # 是否必填
+        default: ""      # 默认值
+        description: ""  # 属性说明
+    events:              # 组件事件列表
+      - name: ""         # 事件名
+        description: ""  # 事件说明
+        payload: ""      # 事件参数说明
+    slots:               # 组件插槽列表
+      - name: ""         # 插槽名
+        description: ""  # 插槽说明
+    code_example: ""     # 完整使用示例代码
+    anti_patterns: []    # 反模式（不应该怎么用）
+    replaces: ""         # 替代的原生/第三方组件，如 "input", "a-input"
+
+# === 页面模板 ===
+page_templates:
+  - template_name: ""    # 模板名称，如 "标准列表页"
+    description: ""      # 模板描述
+    applicable_scenarios: [] # 适用场景
+    structure: ""        # 页面结构描述
+    code_example: ""     # 模板代码示例
+
+# === 合规规则（硬性约束） ===
+compliance_rules:
+  - rule_id: ""          # 规则唯一 ID
+    severity: ""         # 严重程度: error | warning | info
+    category: ""         # 规则分类
+    description: ""      # 规则描述
+    pattern: ""          # 检测模式（正则表达式或关键词）
+    fix_suggestion: ""   # 修复建议
+    examples:
+      correct: ""        # 正确示例
+      incorrect: ""      # 错误示例

@@ -1,0 +1,518 @@
+# ============================================================
+# OpenSpec 默认企业前端规范模版
+# ============================================================
+# 这是一个预填充的企业前端规范示例，用户可以在此基础上修改定制。
+# 覆盖了设计系统、组件库、编码规范、布局模板等维度。
+# ============================================================
+
+meta:
+  schema_version: "1.0.0"
+  spec_name: "企业前端通用规范"
+  spec_id: "default-enterprise-frontend"
+  description: "企业级前端开发通用规范，涵盖设计系统、组件规范、编码标准和页面模板"
+  author: "Bing AI Code"
+  version: "1.0.0"
+  tags: ["enterprise", "frontend", "design-system", "component-library", "coding-standard"]
+  applicable_frameworks: ["vue3", "html", "multi-file"]
+
+category: "design_system"
+
+sections:
+  # ==================== 设计系统 ====================
+  - section_id: "design-tokens"
+    title: "设计令牌（Design Tokens）"
+    description: "统一的设计基础变量，确保视觉一致性"
+    content: |
+      所有页面必须使用以下设计令牌，禁止使用硬编码的颜色值、字号和间距。
+      设计令牌通过 CSS 变量（Custom Properties）实现。
+    code_examples:
+      - language: "css"
+        filename: "design-tokens.css"
+        description: "设计令牌定义"
+        code: |
+          :root {
+            /* === 主色 === */
+            --color-primary: #1677ff;
+            --color-primary-hover: #4096ff;
+            --color-primary-active: #0958d9;
+            --color-primary-bg: #e6f4ff;
+
+            /* === 功能色 === */
+            --color-success: #52c41a;
+            --color-warning: #faad14;
+            --color-error: #ff4d4f;
+            --color-info: #1677ff;
+
+            /* === 中性色 === */
+            --color-text-primary: rgba(0, 0, 0, 0.88);
+            --color-text-secondary: rgba(0, 0, 0, 0.65);
+            --color-text-tertiary: rgba(0, 0, 0, 0.45);
+            --color-text-quaternary: rgba(0, 0, 0, 0.25);
+            --color-bg-layout: #f5f5f5;
+            --color-bg-container: #ffffff;
+            --color-bg-elevated: #ffffff;
+            --color-border: #d9d9d9;
+            --color-border-secondary: #f0f0f0;
+
+            /* === 字号 === */
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 20px;
+            --font-size-xxl: 24px;
+            --font-size-display: 30px;
+
+            /* === 间距 === */
+            --space-xxs: 4px;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+
+            /* === 圆角 === */
+            --radius-sm: 4px;
+            --radius-base: 6px;
+            --radius-lg: 8px;
+
+            /* === 阴影 === */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+            --shadow-base: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+            /* === 动画 === */
+            --transition-fast: 0.1s;
+            --transition-normal: 0.2s;
+            --transition-slow: 0.3s;
+
+            /* === 布局 === */
+            --header-height: 64px;
+            --sidebar-width: 200px;
+            --sidebar-collapsed-width: 64px;
+            --content-max-width: 1200px;
+          }
+    rules:
+      - "禁止使用硬编码颜色值（如 #1677ff），必须使用 CSS 变量"
+      - "所有尺寸单位必须使用 px 或 rem，禁止使用 em"
+      - "字体只使用系统默认字体栈，不引入外部字体"
+
+  # ==================== 编码规范 ====================
+  - section_id: "coding-standard"
+    title: "编码规范"
+    description: "代码编写的基本规范和约定"
+    content: |
+      前端代码必须遵循以下编码规范，确保代码可读性和可维护性。
+    code_examples:
+      - language: "javascript"
+        description: "命名规范示例"
+        code: |
+          // 组件名：PascalCase
+          const UserProfile = { /* ... */ }
+
+          // 变量/函数：camelCase
+          const userName = '张三'
+          function handleSubmit() { /* ... */ }
+
+          // 常量：UPPER_SNAKE_CASE
+          const MAX_RETRY_COUNT = 3
+
+          // CSS 类名：kebab-case（BEM 可选）
+          // .user-profile__avatar--active
+    rules:
+      - "组件文件名使用 PascalCase，如 UserProfile.vue"
+      - "工具函数文件名使用 camelCase，如 formatDate.js"
+      - "CSS 类名使用 kebab-case"
+      - "每个函数不超过 50 行，每个文件不超过 300 行"
+      - "必须添加 JSDoc 注释说明函数用途和参数"
+      - "禁止使用 var，统一使用 const/let"
+
+  # ==================== 布局规范 ====================
+  - section_id: "layout-template"
+    title: "页面布局规范"
+    description: "标准页面布局结构"
+    content: |
+      所有企业页面必须采用统一的布局结构：顶部导航 + 侧边栏 + 内容区。
+      主页必须展示核心功能入口，内容必须丰富完整。
+    rules:
+      - "必须有顶部导航栏，包含 Logo、导航菜单、用户信息"
+      - "侧边栏用于二级导航，支持折叠"
+      - "内容区域必须有面包屑导航"
+      - "表格页面必须支持搜索筛选区域"
+      - "表单页面必须有明确的提交和取消按钮"
+      - "所有页面必须响应式适配桌面端"
+
+  # ==================== 交互规范 ====================
+  - section_id: "interaction-pattern"
+    title: "交互模式规范"
+    description: "通用交互模式和反馈机制"
+    content: |
+      用户操作必须有明确的反馈，表单必须有验证机制。
+    rules:
+      - "按钮点击必须有 loading 状态"
+      - "表单提交前必须进行前端校验"
+      - "成功操作显示成功提示（顶部消息条）"
+      - "错误操作显示具体错误信息"
+      - "删除操作必须有二次确认弹窗"
+      - "列表为空时显示空状态插画和引导文字"
+      - "页面加载时显示骨架屏或 loading 动画"
+
+  # ==================== 安全规范 ====================
+  - section_id: "security-rules"
+    title: "安全规范"
+    description: "前端安全编码规则"
+    rules:
+      - "禁止使用 innerHTML 渲染用户输入内容"
+      - "表单输入必须做 XSS 过滤"
+      - "API 请求必须携带认证 Token"
+      - "敏感信息（密码等）禁止在 URL 中传递"
+      - "Cookie 必须设置 HttpOnly 和 Secure 属性"
+
+# ==================== 组件库 ====================
+components:
+  - component_name: "BizInput"
+    component_alias: ["业务输入框", "企业输入框", "表单输入"]
+    description: "企业级输入框组件，封装了校验、前后缀图标、计数等功能"
+    usage: "所有表单中的文本输入场景"
+    props:
+      - name: "modelValue"
+        type: "String"
+        required: true
+        description: "绑定值（v-model）"
+      - name: "placeholder"
+        type: "String"
+        required: false
+        default: "'请输入'"
+        description: "占位提示文字"
+      - name: "maxlength"
+        type: "Number"
+        required: false
+        default: "200"
+        description: "最大输入长度"
+      - name: "showCount"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "是否显示字数统计"
+      - name: "disabled"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "是否禁用"
+      - name: "rules"
+        type: "Array"
+        required: false
+        description: "校验规则数组"
+    events:
+      - name: "update:modelValue"
+        description: "值变化时触发"
+        payload: "value: String"
+      - name: "change"
+        description: "值变化且失焦时触发"
+        payload: "value: String"
+    code_example: |
+      <template>
+        <div class="biz-input-wrapper">
+          <label v-if="label" class="biz-input-label">{{ label }}</label>
+          <input
+            v-model="inputValue"
+            :type="type"
+            :placeholder="placeholder"
+            :maxlength="maxlength"
+            :disabled="disabled"
+            class="biz-input"
+            @blur="handleBlur"
+          />
+          <span v-if="showCount" class="biz-input-count">
+            {{ inputValue.length }}/{{ maxlength }}
+          </span>
+          <div v-if="errorMsg" class="biz-input-error">{{ errorMsg }}</div>
+        </div>
+      </template>
+    anti_patterns:
+      - "禁止直接使用原生 <input> 标签替代 BizInput"
+      - "禁止在 BizInput 外层额外包裹 div 做布局"
+    replaces: "input, a-input, el-input"
+
+  - component_name: "BizTable"
+    component_alias: ["业务表格", "数据表格", "列表表格"]
+    description: "企业级数据表格组件，内置分页、排序、筛选、行选择功能"
+    usage: "所有数据列表展示场景"
+    props:
+      - name: "columns"
+        type: "Array"
+        required: true
+        description: "列定义数组"
+      - name: "dataSource"
+        type: "Array"
+        required: true
+        description: "数据源"
+      - name: "loading"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "加载状态"
+      - name: "pagination"
+        type: "Object"
+        required: false
+        description: "分页配置"
+      - name: "rowSelection"
+        type: "Object"
+        required: false
+        description: "行选择配置"
+    events:
+      - name: "pageChange"
+        description: "分页变化时触发"
+        payload: "{ page: Number, pageSize: Number }"
+      - name: "sortChange"
+        description: "排序变化时触发"
+        payload: "{ field: String, order: String }"
+      - name: "rowSelect"
+        description: "行选择变化时触发"
+        payload: "selectedKeys: Array"
+    code_example: |
+      <template>
+        <div class="biz-table-wrapper">
+          <div v-if="$slots.toolbar" class="biz-table-toolbar">
+            <slot name="toolbar" />
+          </div>
+          <table class="biz-table">
+            <thead>
+              <tr>
+                <th v-for="col in columns" :key="col.field"
+                    @click="handleSort(col)">
+                  {{ col.title }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in dataSource" :key="index">
+                <td v-for="col in columns" :key="col.field">
+                  {{ row[col.field] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="pagination" class="biz-table-pagination">
+            <!-- 分页组件 -->
+          </div>
+        </div>
+      </template>
+    anti_patterns:
+      - "禁止使用原生 <table> 标签替代 BizTable"
+      - "表格数据量大时必须启用虚拟滚动"
+      - "禁止一次性加载超过 100 条数据不分页"
+    replaces: "table, a-table, el-table"
+
+  - component_name: "BizButton"
+    component_alias: ["业务按钮", "操作按钮"]
+    description: "企业级按钮组件，内置 loading 状态和防重复点击"
+    usage: "所有操作按钮场景"
+    props:
+      - name: "type"
+        type: "String"
+        required: false
+        default: "'default'"
+        description: "按钮类型：primary | default | danger | link"
+      - name: "size"
+        type: "String"
+        required: false
+        default: "'middle'"
+        description: "按钮尺寸：small | middle | large"
+      - name: "loading"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "加载状态"
+      - name: "disabled"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "禁用状态"
+      - name: "icon"
+        type: "String"
+        required: false
+        description: "图标名称"
+    code_example: |
+      <button
+        :class="['biz-button', `biz-button--${type}`, `biz-button--${size}`]"
+        :disabled="disabled || loading"
+        @click="handleClick"
+      >
+        <span v-if="loading" class="biz-button__spinner"></span>
+        <slot />
+      </button>
+    anti_patterns:
+      - "禁止使用原生 <button> 标签替代 BizButton"
+      - "提交类按钮必须有 loading 防重复点击"
+    replaces: "button, a-button, el-button"
+
+  - component_name: "BizModal"
+    component_alias: ["弹窗", "对话框", "模态框"]
+    description: "企业级模态对话框组件"
+    usage: "表单编辑、确认操作、信息展示等弹窗场景"
+    props:
+      - name: "visible"
+        type: "Boolean"
+        required: true
+        description: "是否可见（v-model）"
+      - name: "title"
+        type: "String"
+        required: true
+        description: "标题"
+      - name: "width"
+        type: "String"
+        required: false
+        default: "'520px'"
+        description: "宽度"
+      - name: "confirmLoading"
+        type: "Boolean"
+        required: false
+        default: "false"
+        description: "确认按钮 loading 状态"
+    events:
+      - name: "confirm"
+        description: "点击确认按钮"
+      - name: "cancel"
+        description: "点击取消或关闭按钮"
+    code_example: |
+      <template>
+        <div v-if="visible" class="biz-modal-overlay" @click.self="$emit('cancel')">
+          <div class="biz-modal" :style="{ width }">
+            <div class="biz-modal__header">
+              <h3>{{ title }}</h3>
+              <button class="biz-modal__close" @click="$emit('cancel')">&times;</button>
+            </div>
+            <div class="biz-modal__body">
+              <slot />
+            </div>
+            <div class="biz-modal__footer">
+              <button class="biz-button--default" @click="$emit('cancel')">取消</button>
+              <button class="biz-button--primary" :disabled="confirmLoading" @click="$emit('confirm')">
+                {{ confirmLoading ? '提交中...' : '确定' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    anti_patterns:
+      - "删除操作的确认弹窗必须明确告知删除对象的名称"
+      - "禁止弹窗嵌套弹窗，最多一层弹窗"
+    replaces: "dialog, a-modal, el-dialog"
+
+# ==================== 页面模板 ====================
+page_templates:
+  - template_name: "标准列表页"
+    description: "带搜索筛选、数据表格、分页的标准列表页面"
+    applicable_scenarios: ["用户管理", "订单列表", "数据管理"]
+    structure: |
+      页面结构：顶部搜索筛选区 + 操作工具栏 + 数据表格 + 底部分页
+      - 搜索区域：一行 3-4 个筛选条件 + 查询/重置按钮
+      - 工具栏：新增按钮 + 批量操作按钮
+      - 表格：序号 + 数据列 + 操作列（编辑/删除/查看）
+      - 分页：右对齐，显示总数
+    code_example: |
+      <template>
+        <div class="page-list">
+          <!-- 搜索筛选区 -->
+          <div class="search-panel">
+            <div class="search-fields">
+              <!-- 筛选字段 -->
+            </div>
+            <div class="search-actions">
+              <BizButton type="primary" @click="handleSearch">查询</BizButton>
+              <BizButton @click="handleReset">重置</BizButton>
+            </div>
+          </div>
+          <!-- 操作工具栏 -->
+          <div class="table-toolbar">
+            <BizButton type="primary" @click="handleAdd">新增</BizButton>
+          </div>
+          <!-- 数据表格 -->
+          <BizTable :columns="columns" :dataSource="dataList" :loading="loading"
+                    :pagination="pagination" @pageChange="handlePageChange">
+          </BizTable>
+        </div>
+      </template>
+
+  - template_name: "表单编辑页"
+    description: "带表单校验的标准编辑页面"
+    applicable_scenarios: ["用户编辑", "系统设置", "数据录入"]
+    structure: |
+      页面结构：页面标题 + 表单区域 + 底部操作按钮
+      - 表单采用两列布局，标签右对齐
+      - 必填字段标注红色星号
+      - 底部固定：保存 + 取消按钮
+    code_example: |
+      <template>
+        <div class="page-form">
+          <div class="page-header">
+            <h2>{{ isEdit ? '编辑' : '新增' }}{{ entityName }}</h2>
+          </div>
+          <form class="form-container" @submit.prevent="handleSubmit">
+            <div class="form-grid">
+              <!-- 表单项 -->
+            </div>
+            <div class="form-actions">
+              <BizButton type="primary" :loading="submitLoading" nativeType="submit">保存</BizButton>
+              <BizButton @click="handleCancel">取消</BizButton>
+            </div>
+          </form>
+        </div>
+      </template>
+
+  - template_name: "仪表盘"
+    description: "数据概览仪表盘页面"
+    applicable_scenarios: ["系统首页", "数据看板", "工作台"]
+    structure: |
+      页面结构：统计卡片行 + 图表区域 + 最新动态/待办列表
+      - 顶部 4 个统计卡片（带图标、数字、同比变化）
+      - 中间 2 列图表（折线图 / 柱状图 / 饼图）
+      - 底部最新动态列表
+
+# ==================== 合规规则 ====================
+compliance_rules:
+  - rule_id: "NO_NATIVE_INPUT"
+    severity: "error"
+    category: "组件规范"
+    description: "禁止使用原生 input 元素，必须使用 BizInput 组件"
+    pattern: "<input\\s"
+    fix_suggestion: "将 <input> 替换为 <BizInput>，参考组件文档调整 props"
+    examples:
+      correct: '<BizInput v-model="form.name" placeholder="请输入用户名" />'
+      incorrect: '<input v-model="form.name" placeholder="请输入用户名" />'
+
+  - rule_id: "NO_NATIVE_TABLE"
+    severity: "error"
+    category: "组件规范"
+    description: "禁止使用原生 table 元素，必须使用 BizTable 组件"
+    pattern: "<table[\\s>]"
+    fix_suggestion: "将 <table> 替换为 <BizTable>，使用 columns 配置列定义"
+
+  - rule_id: "NO_NATIVE_BUTTON"
+    severity: "error"
+    category: "组件规范"
+    description: "禁止使用原生 button 元素（表单提交除外），必须使用 BizButton"
+    pattern: "<button[\\s>]"
+    fix_suggestion: "将 <button> 替换为 <BizButton>，使用 type 属性控制样式"
+
+  - rule_id: "NO_INNERHTML"
+    severity: "error"
+    category: "安全规范"
+    description: "禁止使用 innerHTML 渲染用户内容，防止 XSS"
+    pattern: "innerHTML"
+    fix_suggestion: "使用 textContent 替代 innerHTML，或使用框架的模板语法"
+
+  - rule_id: "NO_VAR_KEYWORD"
+    severity: "warning"
+    category: "编码规范"
+    description: "禁止使用 var 声明变量"
+    pattern: "\\bvar\\s+\\w+"
+    fix_suggestion: "将 var 替换为 const（不变量）或 let（可变量）"
+
+  - rule_id: "MUST_RESPONSIVE"
+    severity: "warning"
+    category: "设计规范"
+    description: "页面必须支持响应式布局"
+    pattern: "fixed.*width|width.*px"
+    fix_suggestion: "使用 Flexbox 或 Grid 布局，避免固定宽度"

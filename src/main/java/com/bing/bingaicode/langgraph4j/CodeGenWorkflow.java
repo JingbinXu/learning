@@ -14,6 +14,7 @@ import org.bsc.langgraph4j.GraphStateException;
 import org.bsc.langgraph4j.NodeOutput;
 import org.bsc.langgraph4j.prebuilt.MessagesState;
 import org.bsc.langgraph4j.prebuilt.MessagesStateGraph;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
@@ -28,6 +29,7 @@ import static org.bsc.langgraph4j.action.AsyncEdgeAction.edge_async;
  * 代码生成工作流（实际可用）
  */
 @Slf4j
+@Component
 public class CodeGenWorkflow {
 
     /**

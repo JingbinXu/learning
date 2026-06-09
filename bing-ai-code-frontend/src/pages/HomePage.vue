@@ -161,7 +161,7 @@ onMounted(() => {
     <div class="container">
       <!-- 网站标题和描述 -->
       <div class="hero-section">
-        <h1 class="hero-title">AI 原型生成器</h1>
+        <h1 class="hero-title">蓝图引擎</h1>
         <p class="hero-description">粘贴 PRD 需求文档，AI 自动生成可交互的产品原型</p>
       </div>
 
