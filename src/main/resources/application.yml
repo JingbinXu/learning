@@ -24,3 +24,7 @@ knife4j:
   enable:
   controller:
     language: zh_cn
+
+code:
+  review:
+    enabled: true

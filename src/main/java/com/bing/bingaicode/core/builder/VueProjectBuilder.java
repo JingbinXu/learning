@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,20 +15,33 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class VueProjectBuilder {
 
+    private volatile CompletableFuture<Boolean> currentBuildFuture;
+
     /**
-     * 异步构建 Vue 项目
-     *
-     * @param projectPath
+     * 异步构建 Vue 项目，返回构建完成的 Future
      */
-    public void buildProjectAsync(String projectPath) {
+    public CompletableFuture<Boolean> buildProjectAsync(String projectPath) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.currentBuildFuture = future;
         Thread.ofVirtual().name("vue-builder-" + System.currentTimeMillis())
                 .start(() -> {
                     try {
-                        buildProject(projectPath);
+                        boolean result = buildProject(projectPath);
+                        future.complete(result);
                     } catch (Exception e) {
                         log.error("异步构建 Vue 项目时发生异常: {}", e.getMessage(), e);
+                        future.complete(false);
                     }
                 });
+        return future;
+    }
+
+    /**
+     * 获取当前构建任务的 Future，若无构建任务则返回已完成的 Future
+     */
+    public CompletableFuture<Boolean> getCurrentBuildFuture() {
+        CompletableFuture<Boolean> f = this.currentBuildFuture;
+        return f != null ? f : CompletableFuture.completedFuture(true);
     }
 
     /**

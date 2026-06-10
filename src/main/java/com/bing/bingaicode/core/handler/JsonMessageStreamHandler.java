@@ -1,6 +1,5 @@
 package com.bing.bingaicode.core.handler;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -9,9 +8,6 @@ import com.bing.bingaicode.ai.tools.BaseTool;
 import com.bing.bingaicode.ai.tools.ToolManager;
 import com.bing.bingaicode.constant.AppConstant;
 import com.bing.bingaicode.core.builder.VueProjectBuilder;
-import com.bing.bingaicode.model.entity.User;
-import com.bing.bingaicode.model.enums.ChatHistoryMessageTypeEnum;
-import com.bing.bingaicode.service.ChatHistoryService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -40,15 +36,11 @@ public class JsonMessageStreamHandler {
      * 处理 TokenStream（VUE_PROJECT）
      * 解析 JSON 消息并重组为完整的响应格式
      *
-     * @param originFlux         原始流
-     * @param chatHistoryService 聊天历史服务
-     * @param appId              应用ID
-     * @param loginUser          登录用户
+     * @param originFlux 原始流
+     * @param appId      应用ID
      * @return 处理后的流
      */
-    public Flux<String> handle(Flux<String> originFlux,
-                               ChatHistoryService chatHistoryService,
-                               long appId, User loginUser) {
+    public Flux<String> handle(Flux<String> originFlux, long appId) {
         // 收集数据用于生成后端记忆格式
         StringBuilder chatHistoryStringBuilder = new StringBuilder();
         // 用于跟踪已经见过的工具ID，判断是否是第一次调用
@@ -60,16 +52,8 @@ public class JsonMessageStreamHandler {
                 })
                 .filter(StrUtil::isNotEmpty) // 过滤空字串
                 .doOnComplete(() -> {
-                    // 流式响应完成后，添加 AI 消息到对话历史
-                    String aiResponse = chatHistoryStringBuilder.toString();
-                    chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                     String projectPath = AppConstant.CODE_OUTPUT_ROOT_DIR + "/vue_project_" + appId;
                     vueProjectBuilder.buildProjectAsync(projectPath);
-                })
-                .doOnError(error -> {
-                    // 如果AI回复失败，也要记录错误消息
-                    String errorMessage = "AI回复失败: " + error.getMessage();
-                    chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                 });
     }
 

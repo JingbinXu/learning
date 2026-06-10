@@ -11,6 +11,7 @@ import com.bing.bingaicode.constant.AppConstant;
 import com.bing.bingaicode.core.AiCodeGeneratorFacade;
 import com.bing.bingaicode.core.builder.VueProjectBuilder;
 import com.bing.bingaicode.core.handler.StreamHandlerExecutor;
+import com.bing.bingaicode.core.review.ReviewStreamBuilder;
 import com.bing.bingaicode.exception.BusinessException;
 import com.bing.bingaicode.exception.ErrorCode;
 import com.bing.bingaicode.exception.ThrowUtils;
@@ -66,6 +67,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 
     @Resource
     private StreamHandlerExecutor streamHandlerExecutor;
+
+    @Resource
+    private ReviewStreamBuilder reviewStreamBuilder;
 
     @Resource
     private VueProjectBuilder  vueProjectBuilder;
@@ -291,13 +295,30 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型错误");
         }
-        // 5. 在调用 AI 前，先保存用户消息到数据库中
+        // 在调用 AI 前，先保存用户消息到数据库中
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
-        // 6. 调用 AI 生成代码（流式）
+        // 调用 AI 生成代码（流式）
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        // 7. 收集 AI 响应的内容，并且在完成后保存记录到对话历史
-        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
-
+        Flux<String> processedStream = streamHandlerExecutor.doExecute(codeStream, appId, codeGenTypeEnum);
+        // 代码生成完成后，拼接 AI 代码审查流
+        Flux<String> reviewFlux = reviewStreamBuilder.buildReviewFlux(appId, message, codeGenTypeEnum);
+        Flux<String> fullStream = processedStream.concatWith(reviewFlux);
+        // 收集完整响应（代码 + 审查），完成后保存到对话历史
+        StringBuilder fullResponseBuilder = new StringBuilder();
+        return fullStream
+                .map(chunk -> {
+                    fullResponseBuilder.append(chunk);
+                    return chunk;
+                })
+                .doOnComplete(() -> {
+                    chatHistoryService.addChatMessage(appId, fullResponseBuilder.toString(),
+                            ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+                })
+                .doOnError(error -> {
+                    String errorMessage = "AI回复失败: " + error.getMessage();
+                    chatHistoryService.addChatMessage(appId, errorMessage,
+                            ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+                });
     }
     /**
      * 删除应用时，关联删除对话历史
